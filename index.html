@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flowering Time Terrarium</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <section class="intro">
+      <div>
+        <h1>Flowering Time Terrarium</h1>
+        <p>스크롤을 내리면 1월부터 5월까지의 시간이 흐르고, 각 연도의 꽃들이 개화 시기에 맞춰 피어납니다.</p>
+      </div>
+      <div class="date-display">
+        <span id="currentDateLabel">1월 1일</span>
+        <div class="date-subtitle">🌡 카드 우측 온도는 1–5월 평균기온입니다./div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <label for="regionSelect">Region</label>
+      <select id="regionSelect"></select>
+
+      <span class="station-info">
+        관측지역 : <strong id="stationLabel">-</strong>
+      </span>
+
+      <div class="divider"></div>
+
+      <label for="cardCountSlider">한 줄 카드 수</label>
+      <span id="cardCountLabel">7개</span>
+      <input id="cardCountSlider" type="range" min="4" max="12" value="7" />
+      
+    </section>
+
+    <section class="legend">
+      <div class="legend-item"><span class="legend-flower plum-mini"></span>매화</div>
+      <div class="legend-item"><span class="legend-flower forsythia-mini"></span>개나리</div>
+      <div class="legend-item"><span class="legend-flower azalea-mini"></span>진달래</div>
+      <div class="legend-item"><span class="legend-flower cherry-mini"></span>벚꽃</div>
+    </section>
+
+    <section class="axis">
+      <span>1월</span>
+      <div class="axis-line">
+        <div id="dateMarker" class="date-marker"></div>
+      </div>
+      <span>5월 초</span>
+    </section>
+
+    <section id="yearGrid" class="year-grid"></section>
+
+    <div class="scroll-hint">⌄ 스크롤을 내려 시간을 흘려보세요</div>
+  </main>
+
+  <div id="tooltip" class="tooltip"></div>
+  <div class="scroll-space"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="script.js"></script>
+</body>
+</html>
