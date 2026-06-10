@@ -4,7 +4,7 @@ const flowerTypes = [
     accKey: "매화_적산온도",
     name: "매화",
     className: "plum",
-    color: "#e9e7dd",
+    color: "#2035f0",
     order: 0,
     baseStemHeight: 56
   },
@@ -13,7 +13,7 @@ const flowerTypes = [
     accKey: "개나리_적산온도",
     name: "개나리",
     className: "forsythia",
-    color: "#ffd51e",
+    color: "#ffeb0e",
     order: 1,
     baseStemHeight: 49
   },
@@ -22,7 +22,7 @@ const flowerTypes = [
     accKey: "진달래_적산온도",
     name: "진달래",
     className: "azalea",
-    color: "#df45da",
+    color: "#82067e",
     order: 2,
     baseStemHeight: 42
   },
@@ -31,7 +31,7 @@ const flowerTypes = [
     accKey: "벚나무_적산온도",
     name: "벚꽃",
     className: "cherry",
-    color: "#f9c4c4",
+    color: "#f9c4f2",
     order: 3,
     baseStemHeight: 35
   }
@@ -54,8 +54,8 @@ let currentProvince = "";
 let currentStation = "";
 let currentDoy = START_DOY;
 
-let minAccTemp;
-let maxAccTemp;
+let minAccTemp = 0;
+let maxAccTemp = 1;
 
 d3.csv("flower_data.csv").then(data => {
   allData = data.map(d => {
@@ -98,6 +98,7 @@ d3.csv("flower_data.csv").then(data => {
 
   updateStationInfo();
   updateCardCount();
+  fitCardsToViewport();
   renderStation();
   updateByScroll();
 });
@@ -105,12 +106,27 @@ d3.csv("flower_data.csv").then(data => {
 regionSelect.addEventListener("change", () => {
   currentProvince = regionSelect.value;
   updateStationInfo();
+  updateCardCount();
+  fitCardsToViewport();
   renderStation();
   updateFlowers();
 });
 
-cardCountSlider.addEventListener("input", updateCardCount);
+cardCountSlider.addEventListener("input", () => {
+  updateCardCount();
+  fitCardsToViewport();
+  renderStation();
+  updateFlowers();
+});
+
 window.addEventListener("scroll", updateByScroll);
+
+window.addEventListener("resize", () => {
+  updateCardCount();
+  fitCardsToViewport();
+  renderStation();
+  updateFlowers();
+});
 
 function updateStationInfo() {
   const stations = [
@@ -126,9 +142,86 @@ function updateStationInfo() {
 }
 
 function updateCardCount() {
-  const count = +cardCountSlider.value;
-  cardCountLabel.textContent = `${count}개`;
-  yearGrid.style.setProperty("--cards-per-row", count);
+  const desiredCount = +cardCountSlider.value;
+  const effectiveCount = getEffectiveCardCount(desiredCount);
+
+  cardCountLabel.textContent =
+    desiredCount === effectiveCount
+      ? `${desiredCount}개`
+      : `${desiredCount}개 → ${effectiveCount}개`;
+
+  yearGrid.style.setProperty("--cards-per-row", effectiveCount);
+}
+
+function getEffectiveCardCount(desiredCount) {
+  if (!allData.length || !currentProvince || !currentStation) {
+    return desiredCount;
+  }
+
+  const stationData = allData.filter(
+    row => row["도"] === currentProvince && row["지역"] === currentStation
+  );
+
+  const totalCards = stationData.length || 1;
+
+  const main = document.querySelector("main");
+  const intro = document.querySelector(".intro");
+  const controls = document.querySelector(".controls");
+  const legend = document.querySelector(".legend");
+  const axis = document.querySelector(".axis");
+
+  if (!main || !intro || !controls || !legend || !axis) {
+    return desiredCount;
+  }
+
+  const mainStyle = getComputedStyle(main);
+
+  const usedHeight =
+    parseFloat(mainStyle.paddingTop) +
+    parseFloat(mainStyle.paddingBottom) +
+    intro.offsetHeight +
+    controls.offsetHeight +
+    legend.offsetHeight +
+    axis.offsetHeight +
+    28;
+
+  const availableHeight = window.innerHeight - usedHeight;
+
+  const minReadableRowHeight = 86;
+  const maxRows = Math.max(1, Math.floor(availableHeight / minReadableRowHeight));
+  const minimumCardsPerRow = Math.ceil(totalCards / maxRows);
+
+  return Math.max(desiredCount, minimumCardsPerRow);
+}
+
+function fitCardsToViewport() {
+  const main = document.querySelector("main");
+  const intro = document.querySelector(".intro");
+  const controls = document.querySelector(".controls");
+  const legend = document.querySelector(".legend");
+  const axis = document.querySelector(".axis");
+
+  if (!main || !intro || !controls || !legend || !axis || !yearGrid) return;
+
+  const mainStyle = getComputedStyle(main);
+  const paddingTop = parseFloat(mainStyle.paddingTop);
+  const paddingBottom = parseFloat(mainStyle.paddingBottom);
+
+  const usedHeight =
+    paddingTop +
+    paddingBottom +
+    intro.offsetHeight +
+    controls.offsetHeight +
+    legend.offsetHeight +
+    axis.offsetHeight +
+    28;
+
+  const availableHeight = window.innerHeight - usedHeight;
+
+  yearGrid.style.height = `${Math.max(300, availableHeight)}px`;
+
+  const effectiveCount = getEffectiveCardCount(+cardCountSlider.value);
+  yearGrid.style.setProperty("--cards-per-row", effectiveCount);
 }
 
 function renderStation() {
@@ -137,6 +230,26 @@ function renderStation() {
   const stationData = allData
     .filter(row => row["도"] === currentProvince && row["지역"] === currentStation)
     .sort((a, b) => a["연도"] - b["연도"]);
+
+  const cardCount = getEffectiveCardCount(+cardCountSlider.value);
+  const gridHeight = yearGrid.clientHeight || 520;
+  const estimatedRows = Math.ceil(stationData.length / cardCount);
+  const estimatedCardHeight = gridHeight / estimatedRows;
+
+  const cardScale = Math.max(0.58, Math.min(1.05, 8 / cardCount));
+  const heightScale = Math.max(0.42, Math.min(1.7, estimatedCardHeight / 145));
+  const responsiveScale = Math.min(cardScale, heightScale);
+
+  const verticalGrowScale =
+    estimatedCardHeight < 120
+      ? Math.max(0.55, estimatedCardHeight / 150)
+      : Math.max(1, Math.min(1.65, estimatedCardHeight / 125));
+
+  const narrowScale =
+    cardCount >= 12 ? 0.5 :
+    cardCount >= 10 ? 0.58 :
+    cardCount >= 8 ? 0.68 :
+    1;
 
   stationData.forEach(row => {
     const card = document.createElement("div");
@@ -184,21 +297,40 @@ function renderStation() {
 
         ${flowerData.map((flower, orderIndex) => {
           const safeOffset = getSafeOffset(flower, flowerData);
-          const x = doyToPercent(flower.doy, safeOffset);
+          const x = doyToPercent(flower.doy, safeOffset, cardCount);
           const scale = accTempToScale(flower.accTemp);
 
-          const recentBoost = orderIndex === flowerData.length - 1 ? 1.08 : 1;
-          const finalScale = scale * recentBoost;
+          const recentBoost = orderIndex === flowerData.length - 1 ? 1.03 : 1;
 
-          const headWidth = 38 * finalScale;
-          const headHeight = 38 * finalScale;
-          const flowerWidth = 42 * finalScale;
-          const petalSize = 17 * finalScale;
-          const petalDistance = -12 * finalScale;
-          const centerSize = 12 * finalScale;
-          const centerRingSize = 2.2 * finalScale;
+          const visualScale =
+            estimatedCardHeight < 120
+              ? 0.72
+              : Math.min(1.28, 0.86 + verticalGrowScale * 0.18);
 
-          const stemHeight = flower.baseStemHeight;
+          const finalScale =
+            scale *
+            recentBoost *
+            responsiveScale *
+            visualScale *
+            narrowScale;
+
+          const headWidth = 42 * finalScale;
+          const headHeight = 42 * finalScale;
+          const flowerWidth = 46 * finalScale;
+          const petalSize = 18.5 * finalScale;
+          const petalDistance = -12.8 * finalScale;
+          const centerSize = 11.5 * finalScale;
+          const centerRingSize = 2.1 * finalScale;
+
+          const stemHeight =
+            flower.baseStemHeight *
+            responsiveScale *
+            (estimatedCardHeight < 120 ? 0.78 : verticalGrowScale * 1.12) *
+            narrowScale;
+
+          const flowerBottom =
+            estimatedCardHeight < 120 ? 28 : 31;
+
           const zIndex = 10 + Math.round(flower.doy);
 
           return `
@@ -214,6 +346,7 @@ function renderStation() {
               data-acc-raw="${flower.accTemp}"
               style="
                 --x:${x}%;
+                --flower-bottom:${flowerBottom}%;
                 --flower-width:${flowerWidth}px;
                 --head-width:${headWidth}px;
                 --head-height:${headHeight}px;
@@ -240,6 +373,8 @@ function renderStation() {
             </div>
           `;
         }).join("")}
+
+        <div class="glass-dome"></div>
       </div>
     `;
 
@@ -262,7 +397,7 @@ function getSafeOffset(targetFlower, flowerData) {
   const index = closeFlowers.findIndex(flower => flower.name === targetFlower.name);
   const center = (closeFlowers.length - 1) / 2;
 
-  return (index - center) * 1.2;
+  return (index - center) * 0.7;
 }
 
 function updateByScroll() {
@@ -273,6 +408,7 @@ function updateByScroll() {
   currentDateLabel.textContent = doyToDate(currentDoy);
 
   const markerColor = timelineColor(scrollRatio);
+
   dateMarker.style.left = `${scrollRatio * 100}%`;
   dateMarker.style.background = markerColor;
   dateMarker.style.boxShadow = `0 0 18px ${markerColor}`;
@@ -329,20 +465,20 @@ function updateTerrariumColor() {
       terrarium.style.setProperty("--sky-top", "#382b47");
       terrarium.style.setProperty("--sky-bottom", "#5d4053");
       terrarium.style.setProperty("--sky-glow", "transparent");
-      terrarium.style.setProperty("--soil-top", "#355c47");
-      terrarium.style.setProperty("--soil-bottom", "#263f33");
+      terrarium.style.setProperty("--soil-top", "#2f4636");
+      terrarium.style.setProperty("--soil-bottom", "#21170f");
       return;
     }
 
     const latestFlower = bloomedFlowers[0];
 
-    const skyTop = mixColor("#382b47", latestFlower.color, 0.35);
-    const skyBottom = mixColor("#5d4053", latestFlower.color, 0.45);
+    const skyTop = mixColor("#382b47", latestFlower.color, 0.16);
+    const skyBottom = mixColor("#5d4053", latestFlower.color, 0.2);
     const soilColors = accTempToSoilColor(latestFlower.accTemp);
 
     terrarium.style.setProperty("--sky-top", skyTop);
     terrarium.style.setProperty("--sky-bottom", skyBottom);
-    terrarium.style.setProperty("--sky-glow", hexToRgba(latestFlower.color, 0.45));
+    terrarium.style.setProperty("--sky-glow", hexToRgba(latestFlower.color, 0.28));
     terrarium.style.setProperty("--soil-top", soilColors.top);
     terrarium.style.setProperty("--soil-bottom", soilColors.bottom);
   });
@@ -386,35 +522,44 @@ function attachTooltipEvents() {
   });
 }
 
-function doyToPercent(doy, offset = 0) {
+function doyToPercent(doy, offset = 0, cardCount = 7) {
   if (isNaN(doy) || doy <= 0) return 0;
 
   const basePercent = ((doy - START_DOY) / (END_DOY - START_DOY)) * 100;
   const correctedPercent = basePercent + offset;
 
-  return Math.max(7, Math.min(93, correctedPercent));
+  const margin =
+    cardCount >= 12 ? 20 :
+    cardCount >= 10 ? 16 :
+    cardCount >= 8 ? 13 :
+    7;
+
+  return Math.max(margin, Math.min(100 - margin, correctedPercent));
 }
 
 function accTempToScale(value) {
   if (isNaN(value) || maxAccTemp === minAccTemp) return 0.82;
 
-  const t = (value - minAccTemp) / (maxAccTemp - minAccTemp);
+  const rawT = (value - minAccTemp) / (maxAccTemp - minAccTemp);
+  const t = Math.max(0, Math.min(1, rawT));
+
   return 0.62 + t * 0.55;
 }
 
 function accTempToSoilColor(value) {
   if (isNaN(value) || maxAccTemp === minAccTemp) {
     return {
-      top: "#355c47",
-      bottom: "#263f33"
+      top: "#2f4636",
+      bottom: "#21170f"
     };
   }
 
-  const t = (value - minAccTemp) / (maxAccTemp - minAccTemp);
+  const rawT = (value - minAccTemp) / (maxAccTemp - minAccTemp);
+  const t = Math.pow(Math.max(0, Math.min(1, rawT)), 0.55);
 
   return {
-    top: mixColor("#355c47", "#b67a44", t),
-    bottom: mixColor("#263f33", "#7b4b2d", t)
+    top: mixColor("#2f4636", "#7a5530", t),
+    bottom: mixColor("#21170f", "#3b2415", t)
   };
 }
 
