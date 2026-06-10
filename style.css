@@ -15,7 +15,7 @@ main {
   position: sticky;
   top: 0;
   min-height: 100vh;
-  padding: 24px 28px 20px;
+  padding: 20px 24px 16px;
   overflow: hidden;
 }
 
@@ -27,31 +27,40 @@ main {
 }
 
 .intro h1 {
-  margin: 0 0 8px;
-  font-size: 36px;
+  margin: 0 0 2px;
+  font-size: 28px;
   font-weight: 600;
   letter-spacing: -0.03em;
 }
 
 .intro p {
-  margin: 0 0 18px;
+  margin: 0 0 4px;
   color: #c9b8c8;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .date-display {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: bold;
   color: #ffcf6e;
   white-space: nowrap;
-  padding-top: 32px;
+  padding-top: 20px;
+  text-align: right;
+}
+
+.date-subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.3;
 }
 
 .controls {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 4px;
 }
 
 .controls label {
@@ -61,9 +70,9 @@ main {
 
 .divider {
   width: 1px;
-  height: 28px;
-  margin: 0 14px;
-  background: rgba(255,255,255,0.18);
+  height: 22px;
+  margin: 0 10px;
+  background: rgba(255,255,255,0.22);
 }
 
 select {
@@ -71,18 +80,30 @@ select {
   background: rgba(255,255,255,0.08);
   color: #fff;
   border: 1px solid rgba(255,255,255,0.18);
-  padding: 10px 14px;
+  padding: 9px 14px;
   border-radius: 10px;
   font-size: 15px;
 }
 
+.station-info {
+  color: rgba(255,255,255,0.8);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.station-info strong {
+  color: #ffcf6e;
+  margin-left: 8px;
+}
+
 #cardCountSlider {
   width: 240px;
+  margin-left: 16px;
   accent-color: #ffcf5d;
 }
 
 #cardCountLabel {
-  min-width: 40px;
+  min-width: 36px;
   color: #ffcf5d;
   font-weight: bold;
 }
@@ -90,8 +111,8 @@ select {
 .legend {
   display: flex;
   justify-content: center;
-  gap: 34px;
-  margin-bottom: 20px;
+  gap: 20px;
+  margin-bottom: 4px;
 }
 
 .legend-item {
@@ -109,13 +130,9 @@ select {
   height: 24px;
 }
 
-.legend-petal,
-.legend-flower::before {
-  content: "";
-}
-
 .legend-flower::before,
 .legend-flower::after {
+  content: "";
   position: absolute;
 }
 
@@ -135,7 +152,6 @@ select {
 }
 
 .legend-flower::after {
-  content: "";
   left: 8px;
   top: 9px;
   width: 8px;
@@ -174,7 +190,7 @@ select {
   grid-template-columns: 44px 1fr 60px;
   align-items: center;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 8px;
   color: #e2d3df;
   font-size: 15px;
 }
@@ -210,34 +226,54 @@ select {
   --cards-per-row: 7;
   display: grid;
   grid-template-columns: repeat(var(--cards-per-row), minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
   gap: 10px;
-  max-height: calc(100vh - 248px);
+  height: 60vh;
   overflow: hidden;
 }
 
 .year-card {
   min-width: 0;
-  height: 183px;
-  padding: 10px;
+  min-height: 0;
+  height: 100%;
+  padding: 5px;
   border: 1px solid rgba(255,255,255,0.13);
-  border-radius: 10px;
+  border-radius: 12px;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025));
   box-shadow:
     inset 0 0 0 1px rgba(255,255,255,0.03),
     0 10px 25px rgba(0,0,0,0.16);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.year-card.spring-complete {
+  border: 1px solid rgba(255, 215, 106, 0.75);
+  outline: none;
+  outline-offset: 0;
+  background:
+    radial-gradient(circle at top center, rgba(255, 215, 106, 0.12), transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+  box-shadow:
+    inset 0 0 0 2px #ffd76a,
+    inset 0 0 12px rgba(255, 215, 106, 0.18),
+    0 0 10px rgba(255, 215, 106, 0.16);
 }
 
 .card-header {
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 3px;
 }
 
 .year-label {
-  font-size: 19px;
+  font-size: 15px;
   font-weight: 800;
   color: #ffcf5d;
   letter-spacing: -0.04em;
@@ -256,59 +292,159 @@ select {
   white-space: nowrap;
 }
 
+/* 유리병 본체 */
 .terrarium {
-  height: 135px;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
   position: relative;
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.36);
   background:
     radial-gradient(circle at 50% 28%, var(--sky-glow), transparent 58%),
     linear-gradient(to bottom, var(--sky-top), var(--sky-bottom));
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 42px 42px 18px 18px / 34px 34px 16px 16px;
   transition: background 0.25s ease;
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.22),
+    inset 9px 0 12px rgba(255,255,255,0.08),
+    inset -9px 0 12px rgba(255,255,255,0.06),
+    inset 0 -10px 16px rgba(0,0,0,0.28),
+    0 0 12px rgba(255,255,255,0.06);
 }
 
+/* 유리 효과: 뿌연 흰막 제거, 얇은 반사만 남김 */
+.glass-dome {
+  pointer-events: none;
+  position: absolute;
+  inset: 3px 5px 4px;
+  z-index: 80;
+  border-radius: 42px 42px 18px 18px / 34px 34px 16px 16px;
+  border: 1.2px solid rgba(255,255,255,0.22);
+  background:
+    radial-gradient(circle at 9% 20%, rgba(255,255,255,0.65) 0 2px, transparent 3px),
+    radial-gradient(circle at 90% 24%, rgba(255,255,255,0.18) 0 1.5px, transparent 3px),
+    linear-gradient(90deg, rgba(255,255,255,0.08), transparent 8%, transparent 92%, rgba(255,255,255,0.06));
+  box-shadow:
+    inset 0 0 5px rgba(255,255,255,0.05),
+    inset 5px 0 6px rgba(255,255,255,0.04),
+    inset -5px 0 6px rgba(255,255,255,0.035),
+    inset 0 -5px 6px rgba(0,0,0,0.12);
+  backdrop-filter: none;
+}
+
+/* 입체 흙층 */
 .soil {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 25%;
+  height: 32%;
   background:
     linear-gradient(to bottom, var(--soil-top), var(--soil-bottom));
   transition: background 0.25s ease;
+  z-index: 2;
 }
 
 .soil::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  top: -2px;
-  height: 3px;
-  background: rgba(255,255,255,0.22);
+  left: -16%;
+  right: -16%;
+  top: -12px;
+  height: 20px;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(47,108,90,0.78) 0%,
+      rgba(47,108,90,0.48) 45%,
+      rgba(47,108,90,0.18) 66%,
+      transparent 78%
+    );
+  filter: blur(0.35px);
 }
 
 .soil::after {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.22;
+  opacity: 0.38;
   background-image:
-    radial-gradient(circle, rgba(40, 20, 8, 0.35) 1px, transparent 1.4px);
-  background-size: 10px 8px;
+    radial-gradient(circle, rgba(24,14,8,0.72) 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(255,255,255,0.08) 0.8px, transparent 1.2px);
+  background-size: 8px 7px, 13px 11px;
+}
+
+/* 얇은 이끼 경계 */
+.terrarium::before {
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 28.5%;
+  height: 16px;
+  z-index: 12;
+  pointer-events: none;
+  opacity: 0.78;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 8% 70%, #2f6c5a 0 2px, transparent 3px),
+    radial-gradient(circle at 18% 48%, #3f7c65 0 2px, transparent 3px),
+    radial-gradient(circle at 30% 72%, #2a5e50 0 2px, transparent 3px),
+    radial-gradient(circle at 43% 55%, #4d8b6d 0 2px, transparent 3px),
+    radial-gradient(circle at 57% 70%, #2f6c5a 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 52%, #3e795f 0 2px, transparent 3px),
+    radial-gradient(circle at 88% 68%, #2b604f 0 2px, transparent 3px),
+    radial-gradient(ellipse at center, rgba(47,108,90,0.3), transparent 68%);
+  filter: drop-shadow(0 0 2px rgba(47,108,90,0.32));
+}
+
+/* 작은 돌 + 짧은 이끼결 */
+.terrarium::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 27.5%;
+  height: 14px;
+  z-index: 11;
+  pointer-events: none;
+  opacity: 0.38;
+  background:
+    radial-gradient(ellipse at 18% 86%, #55514a 0 4px, transparent 5px),
+    radial-gradient(ellipse at 76% 88%, #6b6556 0 3px, transparent 4px),
+    linear-gradient(82deg, transparent 0 8%, #2f6c5a 8% 9%, transparent 9% 18%),
+    linear-gradient(98deg, transparent 0 28%, #3d7a63 28% 29%, transparent 29% 44%),
+    linear-gradient(75deg, transparent 0 55%, #2a5f4f 55% 56%, transparent 56% 70%);
 }
 
 .flower {
   position: absolute;
   left: var(--x);
-  bottom: 22%;
+  bottom: var(--flower-bottom, 31%);
   width: var(--flower-width);
   height: var(--stem-height);
   transform: translateX(-50%);
   transition: opacity 0.25s ease, transform 0.25s ease;
-  z-index: 2;
+  z-index: 18;
   cursor: pointer;
+}
+
+.flower.future {
+  opacity: 0;
+  transform: translateX(-50%) scale(0.72);
+  pointer-events: none;
+}
+
+.flower.bloomed {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+  pointer-events: auto;
+}
+
+.flower.today {
+  filter: drop-shadow(0 0 12px rgba(255, 207, 110, 1));
 }
 
 .stem {
@@ -324,10 +460,10 @@ select {
 
 .leaf {
   position: absolute;
-  bottom: 16px;
+  bottom: calc(var(--stem-height) * 0.28);
   left: 50%;
-  width: 18px;
-  height: 11px;
+  width: calc(var(--head-width) * 0.45);
+  height: calc(var(--head-height) * 0.28);
   background: #315f52;
   border-radius: 80% 20% 80% 20%;
   transform-origin: left center;
@@ -349,20 +485,6 @@ select {
   height: var(--head-height);
   transform: translateX(-50%);
   z-index: 3;
-}
-
-.flower.future {
-  opacity: 0;
-  transform: translateX(-50%) scale(0.72);
-}
-
-.flower.bloomed {
-  opacity: 1;
-  transform: translateX(-50%) scale(1);
-}
-
-.flower.today {
-  filter: drop-shadow(0 0 12px rgba(255, 207, 110, 1));
 }
 
 .petal {
@@ -458,63 +580,116 @@ select {
   height: 260vh;
 }
 
-.year-card.spring-complete {
-  border: 2px solid #ffd76a;
-  background:
-    radial-gradient(
-      circle at top center,
-      rgba(255, 215, 106, 0.14),
-      transparent 55%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.09),
-      rgba(255,255,255,0.03)
-    );
+@media (max-width: 1200px) {
+  main {
+    padding: 18px;
+  }
 
-  box-shadow:
-    0 0 22px rgba(255, 215, 106, 0.32),
-    inset 0 0 0 1px rgba(255,255,255,0.08);
+  .intro {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .date-display {
+    padding-top: 0;
+    text-align: left;
+    font-size: 28px;
+  }
+
+  .controls {
+    flex-wrap: wrap;
+    gap: 10px 14px;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .legend {
+    flex-wrap: wrap;
+    gap: 14px 24px;
+  }
 }
 
-.station-info {
-  color: rgba(255,255,255,0.8);
-  font-size: 14px;
-  white-space: nowrap;
+@media (max-width: 768px) {
+  main {
+    position: relative;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .intro h1 {
+    font-size: 28px;
+  }
+
+  .intro p {
+    font-size: 12px;
+  }
+
+  .controls {
+    align-items: flex-start;
+  }
+
+  select {
+    min-width: 130px;
+  }
+
+  #cardCountSlider {
+    width: 160px;
+    margin-left: 8px;
+  }
+
+  .axis {
+    grid-template-columns: 32px 1fr 44px;
+    font-size: 12px;
+  }
+
+  .year-grid {
+    --cards-per-row: 2;
+    height: auto;
+    overflow: visible;
+  }
+
+  .year-card {
+    height: 170px;
+  }
+
+  .terrarium {
+    height: 122px;
+  }
+
+  .scroll-hint {
+    display: none;
+  }
+
+  .scroll-space {
+    height: 80vh;
+  }
 }
 
-.station-info strong {
-  color: #ffcf6e;
-  margin-left: 4px;
-}
+@media (max-height: 680px) {
+  .intro p {
+    display: none;
+  }
 
-.year-card.spring-complete {
-  border: 2px solid #ffd76a;
-  background:
-    radial-gradient(
-      circle at top center,
-      rgba(255, 215, 106, 0.14),
-      transparent 55%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,0.09),
-      rgba(255,255,255,0.03)
-    );
+  .date-display {
+    font-size: 24px;
+    padding-top: 8px;
+  }
 
-  box-shadow:
-    0 0 22px rgba(255, 215, 106, 0.32),
-    inset 0 0 0 1px rgba(255,255,255,0.08);
-}
+  .controls {
+    margin-bottom: 6px;
+  }
 
-.date-display {
-  text-align: right;
-}
+  .legend {
+    margin-bottom: 6px;
+  }
 
-.date-subtitle {
-  margin-top: 6px;
-  font-size: 11px;
-  font-weight: 400;
-  color: rgba(255,255,255,0.55);
-  line-height: 1.3;
+  .axis {
+    margin-bottom: 6px;
+  }
+
+  .scroll-hint {
+    display: none;
+  }
 }
