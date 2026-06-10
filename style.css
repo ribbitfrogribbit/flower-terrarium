@@ -317,9 +317,9 @@ select {
 .glass-dome {
   pointer-events: none;
   position: absolute;
-  inset: 3px 5px 4px;
+  inset: 1px 2px 2px;
   z-index: 80;
-  border-radius: 42px 42px 18px 18px / 34px 34px 16px 16px;
+  border-radius: 40px 40px 17px 17px / 32px 32px 15px 15px;
   border: 1.2px solid rgba(255,255,255,0.22);
   background:
     radial-gradient(circle at 9% 20%, rgba(255,255,255,0.65) 0 2px, transparent 3px),
@@ -692,4 +692,16 @@ select {
   .scroll-hint {
     display: none;
   }
+}
+
+.empty-terrarium::before {
+  opacity: 0.22;
+}
+
+.empty-terrarium::after {
+  opacity: 0.18;
+}
+
+.empty-terrarium .soil::before {
+  opacity: 0.28;
 }
