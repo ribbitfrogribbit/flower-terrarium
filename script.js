@@ -462,12 +462,18 @@ function updateTerrariumColor() {
     }
 
     if (bloomedFlowers.length === 0) {
-      terrarium.style.setProperty("--sky-top", "#382b47");
-      terrarium.style.setProperty("--sky-bottom", "#5d4053");
+      terrarium.classList.add("empty-terrarium");
+
+      terrarium.style.setProperty("--sky-top", "#211b2b");
+      terrarium.style.setProperty("--sky-bottom", "#30273a");
       terrarium.style.setProperty("--sky-glow", "transparent");
-      terrarium.style.setProperty("--soil-top", "#2f4636");
-      terrarium.style.setProperty("--soil-bottom", "#21170f");
+
+      terrarium.style.setProperty("--soil-top", "#243629");
+      terrarium.style.setProperty("--soil-bottom", "#18120d");
+
       return;
+    } else {
+      terrarium.classList.remove("empty-terrarium");
     }
 
     const latestFlower = bloomedFlowers[0];
